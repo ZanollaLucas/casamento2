@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Presentes</title>
+    <style>
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px;
+            width: 250px;
+            text-align: center;
+        }
+
+        .card img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .card button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .card button:hover {
+            background-color: #45a049;
+        }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        input[type="number"] {
+            width: 50px;
+            padding: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lista de Presentes</h1>
+    <div id="cardContainer" class="card-container"></div>
+
+    <h1>Gerar PIX</h1>
+    <label for="valor">Valor:</label>
+    <input type="text" id="valor" name="valor">
+    <button onclick="gerarPix()">Gerar QR Code</button>
+
+    <h2>QR Code gerado:</h2>
+    <img id="qrCodeImage" src="" alt="QR Code" />
+
+    <script src="script.js"></script>
+</body>
+</html>
