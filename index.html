@@ -50,13 +50,92 @@
     <h1>Lista de Presentes</h1>
     <div id="cardContainer" class="card-container"></div>
 
-    <h1>Gerar PIX</h1>
-    <label for="valor">Valor:</label>
-    <input type="text" id="valor" name="valor">
-    <button onclick="gerarPix()">Gerar QR Code</button>
+<!-- Modal para exibir o QR Code -->
+<div id="qrCodeModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="fecharModal()">&times;</span>
+        <h2>QR Code do Pix</h2>
+        <img id="qrCodeImage" src="" alt="QR Code">
+        
+        <!-- Código Pix (clicável para copiar) -->
+        <div class="codigo-pix-container">
+            <p id="codigoPix" onclick="copiarCodigoPix()">Clique para copiar o código Pix</p>
+        </div>
 
-    <h2>QR Code gerado:</h2>
-    <img id="qrCodeImage" src="" alt="QR Code" />
+        <button id="pixRealizadoBtn">Pix realizado</button>
+    </div>
+</div>
+
+    <style>
+        /* Estilo do modal */
+        .modal {
+            display: none; /* Esconde o modal inicialmente */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+            position: relative;
+        }
+
+        .modal img {
+            width: 200px;
+            height: auto;
+            margin-top: 10px;
+        }
+
+        .modal button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal button:hover {
+            background-color: #45a049;
+        }
+
+        .codigo-pix-container {
+            margin-top: 10px;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            user-select: none;
+            text-align: center;
+            word-wrap: break-word;  /* Permite quebra de linha */
+            overflow-x: auto;       /* Permite rolagem horizontal caso necessário */
+            max-width: 100%;        /* Garante que não ultrapasse a largura do modal */
+        }
+
+        .codigo-pix-container:hover {
+            background-color: #ddd;
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+
 
     <script src="script.js"></script>
 </body>
