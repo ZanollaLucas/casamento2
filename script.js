@@ -108,13 +108,38 @@ function fecharModal() {
 // Função para buscar os presentes e gerar os cards
 async function carregarPresentes() {
     try {
-        const response = await fetch("http://localhost:8080/presente");
+       // const response = await fetch("http://localhost:8080/presente");
 
-        if (!response.ok) {
-            throw new Error("Erro ao carregar presentes");
+       // if (!response.ok) {
+        //    throw new Error("Erro ao carregar presentes");
+       // }
+
+       // const presentes = await response.json();
+
+       const presentes = [
+        {
+            id: 1,
+            nome: "Jogo de Panelas",
+            descricao: "Conjunto de panelas antiaderentes.",
+            valor: 299.99,
+            img: "https://via.placeholder.com/150"
+        },
+        {
+            id: 2,
+            nome: "Aparelho de Jantar",
+            descricao: "Conjunto para 6 pessoas.",
+            valor: 199.90,
+            img: "https://via.placeholder.com/150"
+        },
+        {
+            id: 3,
+            nome: "Cafeteira Expresso",
+            descricao: "Prepara café expresso rapidamente.",
+            valor: 349.90,
+            img: "https://via.placeholder.com/150"
         }
+    ];
 
-        const presentes = await response.json();
         const cardContainer = document.getElementById("cardContainer");
 
         presentes.forEach(presente => {
