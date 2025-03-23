@@ -66,8 +66,17 @@ async function EnviarOK() {
     const quantidade = parseInt(quantidadeInput.value, 10);
     const valorTotal = valor * quantidade;
 
+    // Capturar o nome do doador
+    const nomeDoador = document.getElementById("doadorNome").value.trim();
+
+    // Verificar se o nome do doador não está vazio
+    if (nomeDoador === "") {
+        alert("Por favor, insira seu nome.");
+        return; // Não envia a compra se o nome estiver vazio
+    }
+
     const dadosCompraPost = {
-        nomeDonatario: "teste",
+        nomeDonatario: nomeDoador, // Substitui "teste" pelo nome do doador
         presenteid: id,
         valorTotal: valorTotal,
         valorPresente: valor,
@@ -92,8 +101,12 @@ async function EnviarOK() {
         window.comprando = null;
         window.qrCode = "";
         window.nomeComprador = "";
+
+        // Limpar o campo de nome do doador após a compra
+        document.getElementById("doadorNome").value = "";
+
         fecharModal();
-        
+
     } catch (error) {
         console.error("Erro ao realizar a compra:", error);
         alert("Ocorreu um erro ao processar a compra.");
@@ -108,37 +121,13 @@ function fecharModal() {
 // Função para buscar os presentes e gerar os cards
 async function carregarPresentes() {
     try {
-       // const response = await fetch("http://localhost:8080/presente");
+        const response = await fetch("http://localhost:8080/presente");
 
-       // if (!response.ok) {
-        //    throw new Error("Erro ao carregar presentes");
-       // }
-
-       // const presentes = await response.json();
-
-       const presentes = [
-        {
-            id: 1,
-            nome: "Jogo de Panelas",
-            descricao: "Conjunto de panelas antiaderentes.",
-            valor: 299.99,
-            img: "https://via.placeholder.com/150"
-        },
-        {
-            id: 2,
-            nome: "Aparelho de Jantar",
-            descricao: "Conjunto para 6 pessoas.",
-            valor: 199.90,
-            img: "https://via.placeholder.com/150"
-        },
-        {
-            id: 3,
-            nome: "Cafeteira Expresso",
-            descricao: "Prepara café expresso rapidamente.",
-            valor: 349.90,
-            img: "https://via.placeholder.com/150"
+        if (!response.ok) {
+            throw new Error("Erro ao carregar presentes");
         }
-    ];
+
+        const presentes = await response.json();
 
         const cardContainer = document.getElementById("cardContainer");
 
@@ -147,22 +136,64 @@ async function carregarPresentes() {
             const card = document.createElement("div");
             card.classList.add("card");
 
-            // Adicionando a quantidade e o botão "Gerar Pix"
+            // Verificar se o valor do presente é null ou 0.00 e permitir edição
+            let valorPresente = presente.valor;
+            let valorHTML = `
+                <p>R$ <span id="valorPresente${presente.id}">${valorPresente.toFixed(2)}</span></p>
+            `;
+            let botao = `
+                <button onclick="gerarPixParaPresente(${presente.id}, ${presente.valor})" style="margin-top: 10px; width: 100%;">Gerar PIX</button>
+            `;
+
+            if (valorPresente === null || valorPresente === 0.00) {
+                valorHTML = `
+                    <label for="valorPresenteInput${presente.id}">Valor em R$:</label>
+                    <input    type="text" 
+                        id="valorPresenteInput${presente.id}" 
+                        name="valorPresente" 
+                        value="0.00" 
+                        style="width: 100px; padding: 5px; margin-top: 10px;" 
+                        onkeydown="bloquearLetras(event, this)"
+                        onblur="formatarValorNoBlur(this)"
+                        placeholder="Digite o valor"
+                    >
+                `;
+                botao = `
+                <button onclick="gerarPixParaPresente(${presente.id}, parseFloat(document.getElementById('valorPresenteInput${presente.id}').value.replace(',', '.')))" style="margin-top: 10px; width: 100%;">Gerar PIX</button>
+                `;
+
+            }
+
+            // Adicionando o HTML do card
             card.innerHTML = `
                 <img src="${presente.img}" alt="${presente.nome}">
                 <h3>${presente.nome}</h3>
                 <p>${presente.descricao}</p>
-                <p>R$ ${presente.valor.toFixed(2)}</p>
+                ${valorHTML}
                 <label for="${presente.id}">Quantidade:</label>
                 <input type="number" id="${presente.id}" name="quantidade" value="1" min="1">
-                <button onclick="gerarPixParaPresente(${presente.id}, ${presente.valor})">Gerar PIX</button>
+                ${botao}
             `;
 
             // Adicionando o card ao container
             cardContainer.appendChild(card);
+
+            // Atualizar o valor quando o input de valor for alterado
+            if (valorPresente === null || valorPresente === 0.00) {
+                const valorInput = document.getElementById(`valorPresenteInput${presente.id}`);
+                valorInput.addEventListener('change', (event) => {
+                    const novoValor = parseFloat(event.target.value);
+                    if (!isNaN(novoValor) && novoValor >= 0) {
+                        // Atualiza o valor no card
+                        document.getElementById(`valorPresente${presente.id}`).textContent = `R$ ${novoValor.toFixed(2)}`;
+                    } else {
+                        alert("Por favor, insira um valor válido.");
+                    }
+                });
+            }
         });
     } catch (error) {
-        console.error("Erro:", error);
+        //alert("Erro:", error);
     }
 }
 
@@ -172,6 +203,10 @@ async function gerarPixParaPresente(id, valor) {
     if (!quantidadeInput) {
         console.error(`Erro: Input de quantidade para ID ${id} não encontrado.`);
         return;
+    }
+
+    if(valor === 0.00 || valor === null){
+        alert("Por favor, insira um valor válido ou diferente de 0.00")
     }
 
     const quantidade = parseInt(quantidadeInput.value, 10);
@@ -192,3 +227,43 @@ async function gerarPixParaPresente(id, valor) {
 
 // Carregar presentes assim que a página for carregada
 document.addEventListener("DOMContentLoaded", carregarPresentes);
+
+
+function formatarValorNoBlur(input) {
+    let valor = input.value;
+
+    // Substituir vírgula por ponto para tratar igual em ambos os casos
+    valor = valor.replace(",", ".");
+
+    // Remover todos os caracteres não numéricos, exceto ponto
+    valor = valor.replace(/[^0-9.]/g, "");
+
+    // Limitar a duas casas decimais
+    let [integer, decimal] = valor.split('.');
+    if (decimal) {
+        decimal = decimal.substring(0, 2); // Limita a 2 casas decimais
+    }
+
+    // Formatar valor com vírgula se tiver casas decimais
+    if (decimal) {
+        input.value = `${integer},${decimal}`;
+    } else {
+        input.value = integer;
+    }
+}
+
+function bloquearLetras(event, input) {
+    const tecla = event.key;
+    
+    // Permite números, vírgula, ponto e as teclas de controle como Backspace, Delete e Arrow keys
+    if (!/[0-9,\.]/.test(tecla) && tecla !== "Backspace" && tecla !== "Delete" && tecla !== "ArrowLeft" && tecla !== "ArrowRight") {
+        event.preventDefault(); // Bloqueia a entrada se não for um número, ponto ou vírgula
+        return;
+    }
+
+    // Bloqueia a entrada de um segundo ponto ou vírgula
+    const valorAtual = input.value;
+    if ((tecla === "." || tecla === ",") && (valorAtual.includes(".") || valorAtual.includes(","))) {
+        event.preventDefault(); // Bloqueia o segundo ponto ou vírgula
+    }
+}
