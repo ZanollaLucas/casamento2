@@ -104,7 +104,7 @@ async function EnviarOK() {
 
         // Limpar o campo de nome do doador após a compra
         document.getElementById("doadorNome").value = "";
-        
+
         fecharModal();
 
     } catch (error) {
@@ -193,7 +193,7 @@ async function carregarPresentes() {
             }
         });
     } catch (error) {
-        alert("Erro:", error);
+        //alert("Erro:", error);
     }
 }
 
