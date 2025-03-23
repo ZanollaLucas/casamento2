@@ -155,7 +155,7 @@ async function carregarPresentes() {
                 <p>R$ ${presente.valor.toFixed(2)}</p>
                 <label for="${presente.id}">Quantidade:</label>
                 <input type="number" id="${presente.id}" name="quantidade" value="1" min="1">
-                <button onclick="gerarPixParaPresente(${presente.id}, ${presente.valor})">Gerar PIX</button>
+                <button onclick="gerarPixParaPresente(${presente.id}, ${presente.valor})" style="margin-top: 10px; width: 100%;">Gerar PIX</button>
             `;
 
             // Adicionando o card ao container
